@@ -5,6 +5,15 @@ const { SharpApiCoreService, SharpApiJobTypeEnum } = require('@sharpapi/sharpapi
  */
 class SharpApiTranslateService extends SharpApiCoreService {
   /**
+   * Creates a new SharpApiTranslateService instance
+   * @param {string} apiKey - Your SharpAPI API key
+   * @param {string} [apiBaseUrl='https://sharpapi.com/api/v1'] - API base URL
+   */
+  constructor(apiKey, apiBaseUrl = 'https://sharpapi.com/api/v1') {
+    super(apiKey, apiBaseUrl, '@sharpapi/sharpapi-node-translate/1.0.1');
+  }
+
+  /**
    * Translates the provided text into selected language.
    * Perfect for generating marketing introductions of longer texts.
    *
