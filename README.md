@@ -7,7 +7,7 @@
 [![npm version](https://img.shields.io/npm/v/@sharpapi/sharpapi-node-translate.svg)](https://www.npmjs.com/package/@sharpapi/sharpapi-node-translate)
 [![License](https://img.shields.io/npm/l/@sharpapi/sharpapi-node-translate.svg)](https://github.com/sharpapi/sharpapi-node-client/blob/master/LICENSE.md)
 
-**SharpAPI Advanced Text Translator** provides context-aware translation that understands nuances, idioms, and industry-specific terminology. Supports multiple languages with high accuracy.
+**SharpAPI Advanced Text Translator** provides context-aware translation that understands nuances, idioms, and industry-specific terminology. Supports 80+ languages with high accuracy and customizable voice tones.
 
 ---
 
@@ -18,7 +18,10 @@
 3. [Usage](#usage)
 4. [API Documentation](#api-documentation)
 5. [Examples](#examples)
-6. [License](#license)
+6. [Use Cases](#use-cases)
+7. [API Endpoint](#api-endpoint)
+8. [Related Packages](#related-packages)
+9. [License](#license)
 
 ---
 
@@ -51,24 +54,24 @@ const { SharpApiTranslateService } = require('@sharpapi/sharpapi-node-translate'
 const apiKey = process.env.SHARP_API_KEY; // Store your API key in environment variables
 const service = new SharpApiTranslateService(apiKey);
 
-const text = 'Hello, how are you today?';
+const text = 'Hello, world!';
 const targetLanguage = 'Spanish';
 
-async function translateText() {
+async function processText() {
   try {
-    // Submit translation job
+    // Submit processing job
     const statusUrl = await service.translate(text, targetLanguage);
     console.log('Job submitted. Status URL:', statusUrl);
 
     // Fetch results (polls automatically until complete)
     const result = await service.fetchResults(statusUrl);
-    console.log('Translation:', result.getResultJson());
+    console.log('Result:', result.getResultJson());
   } catch (error) {
     console.error('Error:', error.message);
   }
 }
 
-translateText();
+processText();
 ```
 
 ---
@@ -77,109 +80,40 @@ translateText();
 
 ### Methods
 
-#### `translate(text: string, targetLanguage: string, sourceLanguage?: string, context?: string): Promise<string>`
-
-Translates text from source language to target language with optional context.
+The service provides methods for processing content asynchronously. All methods return a status URL for polling results.
 
 **Parameters:**
-- `text` (string, required): The text to translate
-- `targetLanguage` (string, required): The target language (e.g., 'Spanish', 'French', 'Japanese')
-- `sourceLanguage` (string, optional): The source language (auto-detected if not specified)
-- `context` (string, optional): Additional context to improve translation accuracy
+- `content` (string, required): The content to process
+- `language` (string, optional): Output language
+- `voice_tone` (string, optional): Desired tone (e.g., professional, casual)
+- `context` (string, optional): Additional context for better results
 
-**Returns:**
-- Promise<string>: Status URL for polling the job result
-
-**Example:**
-```javascript
-const statusUrl = await service.translate(
-  'The company is growing fast',
-  'Spanish',
-  'English',
-  'Business context'
-);
-const result = await service.fetchResults(statusUrl);
-```
+For complete API specifications, see the [Postman Documentation](https://documenter.getpostman.com/view/31106842/2sBXVeGsRP).
 
 ### Response Format
 
-The API returns the translated text:
-
-```json
-{
-  "translated_text": "Hola, ¿cómo estás hoy?",
-  "source_language": "English",
-  "target_language": "Spanish",
-  "confidence": 0.98
-}
-```
+The API returns structured JSON data. Response format varies by endpoint - see documentation for details.
 
 ---
 
 ## Examples
 
-### Basic Translation
+### Basic Example
 
 ```javascript
 const { SharpApiTranslateService } = require('@sharpapi/sharpapi-node-translate');
 
 const service = new SharpApiTranslateService(process.env.SHARP_API_KEY);
 
-const englishText = 'Welcome to our website. We are glad you are here!';
+// Customize polling behavior if needed
+service.setApiJobStatusPollingInterval(10);  // Poll every 10 seconds
+service.setApiJobStatusPollingWait(180);     // Wait up to 3 minutes
 
-service.translate(englishText, 'French')
-  .then(statusUrl => service.fetchResults(statusUrl))
-  .then(result => {
-    const translation = result.getResultJson();
-    console.log('Original:', englishText);
-    console.log('Translation:', translation.translated_text);
-  })
-  .catch(error => console.error('Translation failed:', error));
+// Use the service
+// ... (implementation depends on specific service)
 ```
 
-### Translation with Context
-
-```javascript
-const service = new SharpApiTranslateService(process.env.SHARP_API_KEY);
-
-const technicalText = 'The API returns a 404 error when the resource is not found.';
-
-const statusUrl = await service.translate(
-  technicalText,
-  'German',
-  'English',
-  'Software development and API documentation'
-);
-
-const result = await service.fetchResults(statusUrl);
-console.log('Technical translation:', result.getResultJson().translated_text);
-```
-
-### Batch Translation
-
-```javascript
-const service = new SharpApiTranslateService(process.env.SHARP_API_KEY);
-
-const phrases = [
-  'Good morning',
-  'Thank you',
-  'How much does it cost?',
-  'Where is the nearest station?'
-];
-
-const translations = await Promise.all(
-  phrases.map(async (phrase) => {
-    const statusUrl = await service.translate(phrase, 'Japanese');
-    const result = await service.fetchResults(statusUrl);
-    return {
-      original: phrase,
-      translated: result.getResultJson().translated_text
-    };
-  })
-);
-
-console.log('Translations:', translations);
-```
+For more examples, visit the [Product Page](https://sharpapi.com/en/catalog/ai/content-marketing-automation/advanced-text-translator).
 
 ---
 
@@ -194,30 +128,21 @@ console.log('Translations:', translations);
 
 ---
 
-## Supported Languages
-
-SharpAPI supports translation between 100+ languages including:
-
-English, Spanish, French, German, Italian, Portuguese, Russian, Chinese, Japanese, Korean, Arabic, Hindi, Dutch, Swedish, Polish, Turkish, and many more.
-
----
-
 ## API Endpoint
 
 **POST** `/content/translate`
 
 For detailed API specifications, refer to:
-- [Postman Documentation](https://documenter.getpostman.com/view/31106842/2sBXVeGsVb)
+- [Postman Documentation](https://documenter.getpostman.com/view/31106842/2sBXVeGsRP)
 - [Product Page](https://sharpapi.com/en/catalog/ai/content-marketing-automation/advanced-text-translator)
 
 ---
 
 ## Related Packages
 
-- [@sharpapi/sharpapi-node-summarize-text](https://www.npmjs.com/package/@sharpapi/sharpapi-node-summarize-text) - Text summarization
-- [@sharpapi/sharpapi-node-paraphrase](https://www.npmjs.com/package/@sharpapi/sharpapi-node-paraphrase) - Text paraphrasing
-- [@sharpapi/sharpapi-node-proofread](https://www.npmjs.com/package/@sharpapi/sharpapi-node-proofread) - Grammar checking
-- [@sharpapi/sharpapi-node-client](https://www.npmjs.com/package/@sharpapi/sharpapi-node-client) - Full SharpAPI SDK
+- [@sharpapi/sharpapi-node-summarize-text](https://www.npmjs.com/package/@sharpapi/sharpapi-node-summarize-text)
+- [@sharpapi/sharpapi-node-paraphrase](https://www.npmjs.com/package/@sharpapi/sharpapi-node-paraphrase)
+- [@sharpapi/sharpapi-node-proofread](https://www.npmjs.com/package/@sharpapi/sharpapi-node-proofread)
 
 ---
 
